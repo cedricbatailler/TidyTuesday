@@ -4,6 +4,19 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+```{r, include=FALSE}
+library(glue)
+library(tidyverse)
+```
+
+```{r, include=FALSE}
+quiet <- function(x) { 
+  sink(tempfile()) 
+  on.exit(sink()) 
+  invisible(force(x)) 
+} 
+```
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -14,4 +27,36 @@ knitr::opts_chunk$set(
 # TidyTuesday
 
 <!-- badges: start -->
+
 <!-- badges: end -->
+
+My contributions for the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+
+write_plot <- function(x) {
+  
+  year <- str_extract(x, "\\d{4}(?=_\\d{2})")
+  week <- str_extract(x, "(?<=\\d{4}_)\\d{2}$")
+  
+  title <- 
+    tidytuesdayR::tt_load(year, week) %>%
+    quiet() %>% 
+    names() %>%
+    str_to_title()
+  
+  png_path <-  fs::dir_ls(x, regexp = ".png$")
+  
+  cat(glue("## {year}-{week}: {title}"))
+  cat("\n")
+  cat(glue("![{title}]({png_path})"))
+  cat("\n")
+  cat("\n")
+
+  }
+
+fs::dir_ls("plot")  %>% 
+  walk(~write_plot(.x))
+```
+
+
